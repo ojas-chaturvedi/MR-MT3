@@ -2,3 +2,6 @@ out/
 *.pyc
 results/
 scripts/eval_nsynth/
+*.log
+.hydra/
+outputs/
