@@ -7,21 +7,21 @@ dependencies:
   - ffmpeg
   - pip
   - pip:
-    - transformers==4.18.0
+    - transformers
     - torch
-    - librosa==0.9.1
-    - t5==0.9.3
-    - note-seq==0.0.3
-    - pretty-midi==0.2.9
-    - einops==0.4.1
+    - librosa
+    - t5
+    - note-seq
+    - pretty-midi
+    - einops
     - ddsp
-    - tensorflow==2.11
-    - tensorflow-text==2.11
-    - protobuf==3.19.6
-    - numpy==1.23.5
-    - hydra-core==1.2.0
+    - tensorflow==2.19.0
+    - tensorflow-text
+    - protobuf
+    - numpy
+    - hydra-core
     - typing_extensions
     - torchaudio
-    - tensorflow_probability==0.19.0
-    - sentencepiece==0.1.97
+    - tensorflow_probability
+    - sentencepiece
     - pytorch_lightning
