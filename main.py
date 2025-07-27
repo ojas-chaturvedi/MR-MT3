@@ -51,7 +51,9 @@ def get_predictions(
 
     audio = load_audio(eval_audio_file)
 
-    os.makedirs(os.path.dirname(outpath), exist_ok=True)
+    outdir = os.path.dirname(outpath)
+    if outdir:
+        os.makedirs(outdir, exist_ok=True)
 
     handler.inference(
         audio=audio,
