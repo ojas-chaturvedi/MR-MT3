@@ -25,3 +25,4 @@ dependencies:
     - tensorflow_probability
     - sentencepiece
     - pytorch_lightning
+    - mir_eval
