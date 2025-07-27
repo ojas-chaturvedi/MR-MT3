@@ -196,7 +196,9 @@ class InferenceHandler:
             if outpath is None:
                 filename = audio_path.split('/')[-1].split('.')[0]
                 outpath = f'./out/{filename}.mid'
-            os.makedirs('/'.join(outpath.split('/')[:-1]), exist_ok=True)
+            outdir = os.path.dirname(outpath)
+            if outdir:
+                os.makedirs(outdir, exist_ok=True)
             print("saving", outpath)
             note_seq.sequence_proto_to_midi_file(event, outpath)
         
