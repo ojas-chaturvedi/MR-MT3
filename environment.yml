@@ -5,7 +5,8 @@ channels:
 dependencies:
   - python=3.10
   - ffmpeg
-  - pip
+  - pip<24.1
+  - protobuf<=3.20.*
   - pip:
     - transformers
     - torch
@@ -17,7 +18,6 @@ dependencies:
     - ddsp
     - tensorflow==2.19.0
     - tensorflow-text
-    - protobuf
     - numpy
     - hydra-core
     - typing_extensions
