@@ -6,7 +6,7 @@ dependencies:
   - python=3.10
   - ffmpeg
   - pip<24.1
-  - protobuf<=3.20.*
+  - protobuf<=3.20.3
   - pip:
     - transformers
     - torch
