@@ -5,18 +5,18 @@ channels:
 dependencies:
   - python=3.10
   - ffmpeg
+  - tensorflow
+  - pytorch
   - pip<24.1
   - protobuf<=3.20.3
   - pip:
-    - transformers
-    - torch
+    - transformers==4.21.3
     - librosa
     - t5
     - note-seq
     - pretty-midi
     - einops
     - ddsp
-    - tensorflow==2.19.0
     - tensorflow-text
     - numpy
     - hydra-core
