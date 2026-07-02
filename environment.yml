@@ -5,23 +5,29 @@ channels:
 dependencies:
   - python=3.10
   - ffmpeg
-  - tensorflow
-  - pytorch
   - pip<24.1
   - protobuf<=3.20.3
   - pip:
+    # Pin torch to 2.1.0 (cu121) + TensorFlow 2.13: the unpinned conda pytorch
+    # resolved to torch 2.12+cu130 (CUDA 13), whose CUDA libs clash with
+    # TensorFlow's and segfaulted the process the moment both were imported
+    # (TF is pulled in transitively via seqio/t5 in contrib/vocabularies.py).
+    # This torch2.1/tf2.13 pairing is the same combination that works for the
+    # MT3 model, so TF and PyTorch coexist without the segfault.
+    - torch==2.1.0
+    - torchaudio==2.1.0
+    - tensorflow==2.13.0
+    - tensorflow-text==2.13.0
+    - tensorflow_probability==0.21.0
     - transformers==4.21.3
     - librosa
     - t5
     - note-seq
     - pretty-midi
     - einops
-    - tensorflow-text
     - numpy
     - hydra-core
     - typing_extensions
-    - torchaudio
-    - tensorflow_probability
     - sentencepiece
     - pytorch_lightning
     - mir_eval

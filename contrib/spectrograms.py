@@ -26,9 +26,10 @@ import numpy as np
 import warnings
 warnings.filterwarnings("ignore")
 
-# for TF spectrogram
-import tensorflow as tf
-tf.config.set_visible_devices([], 'GPU')
+# NB: TensorFlow is imported LAZILY inside _compute_logmel (only when
+# use_tf_spectral_ops=True). Importing TF at module load alongside PyTorch
+# segfaults in this env (TF tries to dlopen CUDA libs that clash with torch's),
+# which is exactly why the default path uses the torch/librosa mel front end.
 
 # The TF mel front end was previously imported from `ddsp.spectral_ops`. The
 # `ddsp` pip package pulls in `crepe`, whose old setup.py fails to build
@@ -79,6 +80,14 @@ def _safe_log(x, eps=1e-5):
 
 def _compute_logmel(audio, lo_hz=80.0, hi_hz=7600.0, bins=64, fft_size=2048,
                     overlap=0.75, pad_end=True, sample_rate=16000):
+    # Lazy TF import (see note at top): only load TF when this TF path is
+    # actually requested, and keep it off the GPU (PyTorch owns the GPU).
+    global tf
+    import tensorflow as tf
+    try:
+        tf.config.set_visible_devices([], 'GPU')
+    except Exception:
+        pass
     mel = _compute_mel(audio, lo_hz, hi_hz, bins, fft_size, overlap, pad_end, sample_rate)
     return _safe_log(mel)
 
