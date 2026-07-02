@@ -5,6 +5,10 @@ channels:
 dependencies:
   - python=3.10
   - ffmpeg
+  # setuptools<81 still ships pkg_resources; seqio -> tensorflow_text ->
+  # tensorflow_hub imports it (from pkg_resources import parse_version), and
+  # setuptools>=81 removed it (ModuleNotFoundError: 'pkg_resources').
+  - setuptools<81
   - pip<24.1
   - protobuf<=3.20.3
   - pip:
