@@ -27,9 +27,64 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # for TF spectrogram
-from ddsp import spectral_ops
 import tensorflow as tf
 tf.config.set_visible_devices([], 'GPU')
+
+# The TF mel front end was previously imported from `ddsp.spectral_ops`. The
+# `ddsp` pip package pulls in `crepe`, whose old setup.py fails to build
+# ("No module named 'pkg_resources'"), making this env uninstallable. ddsp's
+# compute_logmel is itself pure tf.signal, so we vendor it verbatim from
+# ddsp 3.3.4 (spectral_ops.py / core.py). Same ops -> identical features; we
+# just drop the unbuildable dependency. (t5/seqio are kept -- they are still
+# used by contrib/vocabularies.py.)
+
+
+def _tf_float32(x):
+    if isinstance(x, tf.Tensor):
+        return tf.cast(x, dtype=tf.float32)
+    return tf.convert_to_tensor(x, tf.float32)
+
+
+def _stft(audio, frame_size=2048, overlap=0.75, pad_end=True):
+    audio = _tf_float32(audio)
+    if len(audio.shape) == 3:
+        audio = tf.squeeze(audio, axis=-1)
+    return tf.signal.stft(
+        signals=audio,
+        frame_length=int(frame_size),
+        frame_step=int(frame_size * (1.0 - overlap)),
+        fft_length=None,
+        pad_end=pad_end)
+
+
+def _compute_mag(audio, size=2048, overlap=0.75, pad_end=True):
+    return _tf_float32(tf.abs(_stft(audio, frame_size=size, overlap=overlap, pad_end=pad_end)))
+
+
+def _compute_mel(audio, lo_hz=0.0, hi_hz=8000.0, bins=64, fft_size=2048,
+                 overlap=0.75, pad_end=True, sample_rate=16000):
+    mag = _compute_mag(audio, fft_size, overlap, pad_end)
+    num_spectrogram_bins = int(mag.shape[-1])
+    linear_to_mel_matrix = tf.signal.linear_to_mel_weight_matrix(
+        bins, num_spectrogram_bins, sample_rate, lo_hz, hi_hz)
+    mel = tf.tensordot(mag, linear_to_mel_matrix, 1)
+    mel.set_shape(mag.shape[:-1].concatenate(linear_to_mel_matrix.shape[-1:]))
+    return mel
+
+
+def _safe_log(x, eps=1e-5):
+    safe_x = tf.where(x <= 0.0, eps, x)
+    return tf.math.log(safe_x)
+
+
+def _compute_logmel(audio, lo_hz=80.0, hi_hz=7600.0, bins=64, fft_size=2048,
+                    overlap=0.75, pad_end=True, sample_rate=16000):
+    mel = _compute_mel(audio, lo_hz, hi_hz, bins, fft_size, overlap, pad_end, sample_rate)
+    return _safe_log(mel)
+
+
+class spectral_ops:  # shim so existing `spectral_ops.compute_logmel(...)` calls work
+    compute_logmel = staticmethod(_compute_logmel)
 
 # defaults for spectrogram config
 DEFAULT_SAMPLE_RATE = 16000

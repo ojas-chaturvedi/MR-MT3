@@ -16,7 +16,6 @@ dependencies:
     - note-seq
     - pretty-midi
     - einops
-    - ddsp
     - tensorflow-text
     - numpy
     - hydra-core

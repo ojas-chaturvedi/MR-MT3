@@ -28,7 +28,7 @@ def get_predictions(
     eval_dataset="Slakh",
     verbose=True,
     contiguous_inference=False,
-    use_tf_spectral_ops=False,
+    use_tf_spectral_ops=True,
     batch_size=8,
     max_length=1024
 ):  
