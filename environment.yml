@@ -19,6 +19,11 @@ dependencies:
     - tensorflow==2.13.0
     - tensorflow-text==2.13.0
     - tensorflow_probability==0.21.0
+    # note_seq imports IPython (for notebook display, unused headless); IPython
+    # >=8.13 needs typing_extensions.TypeAliasType (>=4.6), but the t5 stack pins
+    # an older typing_extensions -> ImportError. Pin IPython below 8.13 so
+    # `import note_seq` succeeds with the older typing_extensions.
+    - ipython<8.13
     - transformers==4.21.3
     - librosa
     - t5
